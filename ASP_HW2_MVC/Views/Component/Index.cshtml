@@ -1,0 +1,105 @@
+﻿@using Homework2;
+@model IDictionary<string, Component>
+
+@{
+    ViewBag.Title = "Дом";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+
+    <title>Дом</title>
+    <style>
+        .component-div {
+            border: 2px solid gray;
+            float: left;
+            margin: 3px;
+            padding: 3px;
+            background-color: lightgray;
+        }
+
+        .element-div {
+            border: 1px solid black;
+            float: left;
+            margin-right: 2px;
+            padding: 2px;
+        }
+
+        .delete-div {
+            border: 2px solid red;
+            float: right;
+            margin: 2px;
+            padding: 2px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 5px;
+            min-width: 50px;
+            display: inline-block;
+            text-decoration: none;
+            color: black;
+            background-color: #DDD;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <br />
+
+    @foreach (var item in Model)
+    {
+        <div class="component-div">
+            @item.Value.Info()<br />
+
+
+
+            @*@if (item.Value is ISidable)
+            {
+                using (Html.BeginForm("SetSide/" + item.Key, "Figures"))
+                {
+                    <span>Сторона:</span>
+                    @Html.TextBox("parametr", ((ISidable)item.Value).A, new { id = "a" + item.Key, size = "3" })
+                    <input type="submit" value="Установить" />
+                }
+            }
+            @if (item.Value is IRadiusable)
+            {
+                using (Html.BeginForm("RadiusSet/" + item.Key, "Figures"))
+                {
+                    <span>Радиус:</span>
+                    @Html.TextBox("parametr", ((IRadiusable)item.Value).R, new { id = "r" + item.Key, size = "3" })
+                    <input type="submit" value="Установить" />
+                }
+            }
+            @if (item.Value is IPerimeterable)
+            {
+                ((IPerimeterable)item.Value).CalcPerimeter();
+                <div>
+                    Периметр: @(((IPerimeterable)item.Value).Perimeter)
+                </div>
+            }
+            @if (item.Value is IVolumable)
+            {
+                ((IVolumable)item.Value).CalcVolume();
+                <div>
+                    Площадь: @(((IVolumable)item.Value).Volume)
+                </div>
+            }*@
+
+
+
+
+
+            <a href="/Component/Delete?name=@item.Key" class="delete-div">Удалить</a><br />
+
+        </div>
+        @ViewBag.Remove
+
+    }
+
+</body>
+</html>

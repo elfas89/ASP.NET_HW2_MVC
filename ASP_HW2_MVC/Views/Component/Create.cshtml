@@ -1,0 +1,45 @@
+﻿
+@{
+    ViewBag.Title = "Добавить";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+
+    <title>Добавить</title>
+    <style>
+        .element-div {
+            border: 1px solid black;
+            float: left;
+            margin-right: 2px;
+            padding: 2px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    @using (Html.BeginForm("Create", "Component"))
+    {
+        <br />
+        <span>Компонент:</span>
+        @Html.DropDownList("componentType", (IEnumerable<SelectListItem>)ViewBag.dropDownComponentList)
+        <br />
+
+        <span>Имя компонента:</span>
+        @Html.TextBox("componentName")
+            <label style="color:red">@ViewBag.ErrorNoname</label>
+            <label style="color:red">@ViewBag.ErrorContains</label>
+        <br />
+        
+        <input type="submit" value="Добавить" class="element-div">
+
+    }
+
+</body>
+</html>
+
