@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Homework2
 {
-    internal class Fridge : Component, IPowerable, IOpenable
+    public class Fridge : Component, IPowerable, IOpenable
     {
         private FridgeModes mode;
         private bool doorOpened;

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Homework2
 {
-    internal class Stove : Component
+    public class Stove : Component
     {
         public Stove(string name)
         {

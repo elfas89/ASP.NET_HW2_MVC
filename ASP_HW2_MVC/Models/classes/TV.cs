@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Homework2
 {
-    internal class TV : Component, IPowerable
+    public class TV : Component, IPowerable
     {
         public TV(string name)
         {

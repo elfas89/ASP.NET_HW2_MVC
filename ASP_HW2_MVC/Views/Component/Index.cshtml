@@ -24,15 +24,22 @@
         .element-div {
             border: 1px solid black;
             float: left;
-            margin-right: 2px;
+            margin: 2px;
             padding: 2px;
+            text-align: center;
+            border-radius: 5px;
+            min-width: 50px;
+            display: inline-block;
+            text-decoration: none;
+            color: black;
+            background-color: #DDD;
         }
 
         .delete-div {
             border: 2px solid red;
             float: right;
-            margin: 2px;
-            padding: 2px;
+            margin: 3px;
+            padding: 3px;
             font-weight: bold;
             text-align: center;
             border-radius: 5px;
@@ -55,49 +62,73 @@
         <div class="component-div">
             @item.Value.Info()<br />
 
-
-
-            @*@if (item.Value is ISidable)
+            @if (item.Value is IPowerable)
             {
-                using (Html.BeginForm("SetSide/" + item.Key, "Figures"))
+                <a href="/Component/On?name=@item.Key" class="element-div" style="background-color:lightgreen">Включить</a>
+                <a href="/Component/Off?name=@item.Key" class="element-div" style="background-color:pink">Погасить</a>
+            }
+
+            @if (item.Value is IOpenable)
+            {
+                <a href="~/Component/Open?name=@item.Key" class="element-div">Открыть</a>
+                <a href="~/Component/Close?name=@item.Key" class="element-div">Закрыть</a>
+            }
+
+            @if (item.Value is TV)
+            {
+                <a href="~/Component/PrevChannel?name=@item.Key" class="element-div">Пред.канал</a>
+                <a href="~/Component/NextChannel?name=@item.Key" class="element-div">След.канал</a>
+            }
+
+            @if (item.Value is MediaCenter || item.Value is Oven || item.Value is Fridge)
+            {
+                using (Html.BeginForm("Set", "Component"))
                 {
-                    <span>Сторона:</span>
-                    @Html.TextBox("parametr", ((ISidable)item.Value).A, new { id = "a" + item.Key, size = "3" })
-                    <input type="submit" value="Установить" />
+                    <span class="element-div">
+                        @Html.Hidden("name", @item.Key)
+
+                        @if (item.Value is MediaCenter)
+                        {
+                            <span>Громкость:</span>
+
+                        @Html.TextBox("valueBox", ((MediaCenter)item.Value).Volume, new { id = "id" + item.Key, size = "3" })
+                            <label style="color:red">@ViewBag.NoInt</label>
+                        <input type="submit" value="Установить громкость">
+                        }
+                        
+
+                        @if (item.Value is Oven)
+                        {
+                            <span>Температура:</span>
+
+                            @Html.TextBox("valueBox", ((Oven)item.Value).Temperature, new { id = "id" + item.Key, size = "3" })
+                                <label style="color:red">@ViewBag.NoInt</label>
+                            <input type="submit" value="Установить температуру">
+                        }
+
+
+                        @if (item.Value is Fridge)
+                        {
+                            <span>Режим:</span>
+
+                            @Html.DropDownList("valueBox", (IEnumerable<SelectListItem>)ViewBag.modesList)
+                            
+                            <input type="submit" value="Установить режим">
+                        }
+
+                    </span>
                 }
-            }
-            @if (item.Value is IRadiusable)
-            {
-                using (Html.BeginForm("RadiusSet/" + item.Key, "Figures"))
-                {
-                    <span>Радиус:</span>
-                    @Html.TextBox("parametr", ((IRadiusable)item.Value).R, new { id = "r" + item.Key, size = "3" })
-                    <input type="submit" value="Установить" />
-                }
-            }
-            @if (item.Value is IPerimeterable)
-            {
-                ((IPerimeterable)item.Value).CalcPerimeter();
-                <div>
-                    Периметр: @(((IPerimeterable)item.Value).Perimeter)
-                </div>
-            }
-            @if (item.Value is IVolumable)
-            {
-                ((IVolumable)item.Value).CalcVolume();
-                <div>
-                    Площадь: @(((IVolumable)item.Value).Volume)
-                </div>
-            }*@
+
+            }         
 
 
 
 
+                <br />
+                <a href="/Component/Delete?name=@item.Key" class="delete-div">Удалить</a><br />
 
-            <a href="/Component/Delete?name=@item.Key" class="delete-div">Удалить</a><br />
-
-        </div>
-        @ViewBag.Remove
+            </div>
+            @ViewBag.Remove
 
     }
 

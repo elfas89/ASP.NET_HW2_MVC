@@ -14,7 +14,6 @@ namespace ASP_HW2_MVC.Controllers
         {
             //return View();
 
-            //IDictionary<int, Figure> figuresDictionary;
             IDictionary<string, Component> componentList;
 
             if (Session["Components"] == null)
@@ -36,15 +35,19 @@ namespace ASP_HW2_MVC.Controllers
 
             ViewBag.componentList = componentList;
 
+
+            SelectListItem[] modesList = new SelectListItem[3];
+            modesList[0] = new SelectListItem { Text = "нормальный", Value = "normal", Selected = true };
+            modesList[1] = new SelectListItem { Text = "северный", Value = "north" };
+            modesList[2] = new SelectListItem { Text = "южный", Value = "south" };
+
+            ViewBag.modesList = modesList;
+
+
             return View(componentList);
 
         }
 
-        // GET: Component/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
 
         // GET: Component/Create
         public ActionResult Create()
@@ -127,27 +130,6 @@ namespace ASP_HW2_MVC.Controllers
 
         }
 
-        // GET: Component/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Component/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
 
         public ActionResult Delete(string name)
         {
@@ -161,25 +143,121 @@ namespace ASP_HW2_MVC.Controllers
             return RedirectToAction("Index");
         }
 
+        public ActionResult On(string name)
+        {
+            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
+            ((IPowerable)componentList[name]).PowerOn();
 
+            Session["Components"] = componentList;
 
-        //public ActionResult SetSide(int id, double parametr)
-        //{
-        //    IDictionary<int, Figure> figuresDictionary = (SortedDictionary<int, Figure>)Session["Figures"];
-        //    ((ISidable)figuresDictionary[id]).A = parametr;
-        //    Session["Figures"] = figuresDictionary;
+            return RedirectToAction("Index");
+        }
 
-        //    return RedirectToAction("Index");
-        //}
+        public ActionResult Off(string name)
+        {
+            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
+            ((IPowerable)componentList[name]).PowerOff();
 
-        //public ActionResult RadiusSet(int id, double parametr)
-        //{
-        //    IDictionary<int, Figure> figuresDictionary = (SortedDictionary<int, Figure>)Session["Figures"];
-        //    ((IRadiusable)figuresDictionary[id]).R = parametr;
-        //    Session["Figures"] = figuresDictionary;
+            Session["Components"] = componentList;
 
-        //    return RedirectToAction("Index");
-        //}
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult Open(string name)
+        {
+            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
+            ((IOpenable)componentList[name]).Open();
+            Session["Components"] = componentList;
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult Close(string name)
+        {
+            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
+            ((IOpenable)componentList[name]).Close();
+            Session["Components"] = componentList;
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult PrevChannel(string name)
+        {
+            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
+            ((TV)componentList[name]).PrevChannel();
+            Session["Components"] = componentList;
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult NextChannel(string name)
+        {
+            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
+            ((TV)componentList[name]).NextChannel();
+            Session["Components"] = componentList;
+            return RedirectToAction("Index");
+        }
+
+        // установка значения
+        [HttpPost]
+        public ActionResult Set(string name, string valueBox)
+        {
+            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
+
+            if (componentList[name] is MediaCenter)
+            {
+                try
+                {
+                    int v = Convert.ToInt32(valueBox);
+                    ((MediaCenter)componentList[name]).SetVolume(v);
+                }
+
+                catch (Exception ex)
+                {
+                    ViewBag.NoInt = "Введите числовое значение";
+                }
+
+            }
+
+            if (componentList[name] is Oven)
+            {
+                try
+                {
+                    int t = Convert.ToInt32(valueBox);
+                    ((Oven)componentList[name]).SetTemper(t);
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.NoInt = "Введите числовое значение";
+                }
+            }
+
+            if (componentList[name] is Fridge)
+            {
+                //данные для вью
+                SelectListItem[] modesList = new SelectListItem[3];
+                modesList[0] = new SelectListItem { Text = "нормальный", Value = "normal", Selected = true };
+                modesList[1] = new SelectListItem { Text = "северный", Value = "north" };
+                modesList[2] = new SelectListItem { Text = "южный", Value = "south" };
+
+                ViewBag.modesList = modesList;
+
+                switch (valueBox)
+                {
+                    case ("normal"):
+                        ((Fridge)componentList[name]).Normal();
+                        break;
+                    case ("north"):
+                        ((Fridge)componentList[name]).North();
+                        break;
+                    case ("south"):
+                        ((Fridge)componentList[name]).South();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            Session["Components"] = componentList;
+            return RedirectToAction("Index");
+        }
 
 
 

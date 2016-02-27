@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Homework2
 {
-    internal class MediaCenter : TV
+    public class MediaCenter : TV
     {
         public MediaCenter(string name, double channel)
             : base(name)

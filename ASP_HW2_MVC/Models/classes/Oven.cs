@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Homework2
 {
-    internal class Oven : Stove, IOpenable
+    public class Oven : Stove, IOpenable
     {
         public Oven(string name, int mintemp, int maxtemp)
             : base(name)
