@@ -9,33 +9,34 @@ namespace ASP_HW2_MVC.Controllers
 {
     public class ComponentController : Controller
     {
-        // GET: Component
-        public ActionResult Index()
+        // поле
+        public IDictionary<string, Component> componentList;
+
+        // конструктор
+        public ComponentController()
         {
-            //return View();
-
-            IDictionary<string, Component> componentList;
-
-            if (Session["Components"] == null)
+            if (System.Web.HttpContext.Current.Session["Components"] == null)
             {
-                //в сессии пусто, создаем коллекцию, наполняем по умолчанию
+                //в сессии пусто, создаем коллекцию, наполняем по умолчанию, записываем в сессию
                 componentList = new Dictionary<string, Component>();
-                componentList.Add("Sony", new TV("Sony"));
-                componentList.Add("Aiwa", new MediaCenter("Aiwa", 88.8));
-                componentList.Add("LG", new Fridge("LG"));
+                    componentList.Add("Sony", new TV("Sony"));
+                    componentList.Add("Aiwa", new MediaCenter("Aiwa", 88.8));
+                    componentList.Add("LG", new Fridge("LG"));
 
-                Session["Components"] = componentList;
+                    System.Web.HttpContext.Current.Session["Components"] = componentList;
             }
             else
             {
                 //не пусто, берем коллекцию из сессии
-                componentList = (Dictionary<string, Component>)Session["Components"];
+                componentList = (Dictionary<string, Component>)System.Web.HttpContext.Current.Session["Components"];
             }
+        }
 
+        // GET: Component
+        public ActionResult Index()
+        {
 
-            ViewBag.componentList = componentList;
-
-
+            //данные для вью
             SelectListItem[] modesList = new SelectListItem[3];
             modesList[0] = new SelectListItem { Text = "нормальный", Value = "normal", Selected = true };
             modesList[1] = new SelectListItem { Text = "северный", Value = "north" };
@@ -43,44 +44,24 @@ namespace ASP_HW2_MVC.Controllers
 
             ViewBag.modesList = modesList;
 
-
             return View(componentList);
-
         }
 
 
         // GET: Component/Create
         public ActionResult Create()
         {
-            SelectListItem[] dropDownComponentList = new SelectListItem[5];
-            dropDownComponentList[0] = new SelectListItem { Text = "Телевизор", Value = "tv", Selected = true };
-            dropDownComponentList[1] = new SelectListItem { Text = "Холодильник", Value = "fridge" };
-            dropDownComponentList[2] = new SelectListItem { Text = "Печь", Value = "stove" };
-            dropDownComponentList[3] = new SelectListItem { Text = "Духовка", Value = "oven" };
-            dropDownComponentList[4] = new SelectListItem { Text = "Музыкальный центр", Value = "media" };
-
-            ViewBag.dropDownComponentList = dropDownComponentList;
-
+            ViewBag.dropDownComponentList = CreateComponentList();
             return View();
         }
+
 
         // POST: Component/Create
         [HttpPost]
         public ActionResult Create(string componentType, string componentName)
         {
             // повторяем выпадающий список - для отображения
-            SelectListItem[] dropDownComponentList = new SelectListItem[5];
-            dropDownComponentList[0] = new SelectListItem { Text = "Телевизор", Value = "tv", Selected = true };
-            dropDownComponentList[1] = new SelectListItem { Text = "Холодильник", Value = "fridge" };
-            dropDownComponentList[2] = new SelectListItem { Text = "Печь", Value = "stove" };
-            dropDownComponentList[3] = new SelectListItem { Text = "Духовка", Value = "oven" };
-            dropDownComponentList[4] = new SelectListItem { Text = "Музыкальный центр", Value = "media" };
-
-            ViewBag.dropDownComponentList = dropDownComponentList;
-
-
-                // создаем коллекцию, заполняем из сессии
-                IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
+            ViewBag.dropDownComponentList = CreateComponentList();
 
                 // проверка заполненности поля для имени
                 // проверка наличия имени
@@ -121,77 +102,66 @@ namespace ASP_HW2_MVC.Controllers
                     // добавляем в коллекцию
                     componentList.Add(componentName, newComponent);
 
-                // записываем в сессию
-                Session["Components"] = componentList;
-
                 // возвращаемся на главную
                 return RedirectToAction("Index");
                 }
 
         }
 
+        // выпадающий список устройств
+        private SelectListItem[] CreateComponentList()
+        {
+            SelectListItem[] dropDownComponentList = new SelectListItem[5];
+            dropDownComponentList[0] = new SelectListItem { Text = "Телевизор", Value = "tv", Selected = true };
+            dropDownComponentList[1] = new SelectListItem { Text = "Холодильник", Value = "fridge" };
+            dropDownComponentList[2] = new SelectListItem { Text = "Печь", Value = "stove" };
+            dropDownComponentList[3] = new SelectListItem { Text = "Духовка", Value = "oven" };
+            dropDownComponentList[4] = new SelectListItem { Text = "Музыкальный центр", Value = "media" };
+
+            return dropDownComponentList;
+        }
+
 
         public ActionResult Delete(string name)
         {
-            // создаем коллекцию, заполняем из сессии
-            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
-
-            // удаляем, записываем обратно в сессию
+            // удаляем
             componentList.Remove(name);
-            Session["Components"] = componentList;
-
             return RedirectToAction("Index");
         }
 
         public ActionResult On(string name)
         {
-            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
             ((IPowerable)componentList[name]).PowerOn();
-
-            Session["Components"] = componentList;
-
             return RedirectToAction("Index");
         }
 
         public ActionResult Off(string name)
         {
-            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
             ((IPowerable)componentList[name]).PowerOff();
-
-            Session["Components"] = componentList;
-
             return RedirectToAction("Index");
         }
 
         public ActionResult Open(string name)
         {
-            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
             ((IOpenable)componentList[name]).Open();
-            Session["Components"] = componentList;
             return RedirectToAction("Index");
         }
 
         public ActionResult Close(string name)
         {
-            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
             ((IOpenable)componentList[name]).Close();
-            Session["Components"] = componentList;
             return RedirectToAction("Index");
         }
 
         public ActionResult PrevChannel(string name)
         {
-            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
             ((TV)componentList[name]).PrevChannel();
-            Session["Components"] = componentList;
             return RedirectToAction("Index");
         }
 
         public ActionResult NextChannel(string name)
         {
-            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
             ((TV)componentList[name]).NextChannel();
-            Session["Components"] = componentList;
             return RedirectToAction("Index");
         }
 
@@ -199,7 +169,6 @@ namespace ASP_HW2_MVC.Controllers
         [HttpPost]
         public ActionResult Set(string name, string valueBox)
         {
-            IDictionary<string, Component> componentList = (Dictionary<string, Component>)Session["Components"];
 
             if (componentList[name] is MediaCenter)
             {
@@ -231,13 +200,6 @@ namespace ASP_HW2_MVC.Controllers
 
             if (componentList[name] is Fridge)
             {
-                //данные для вью
-                SelectListItem[] modesList = new SelectListItem[3];
-                modesList[0] = new SelectListItem { Text = "нормальный", Value = "normal", Selected = true };
-                modesList[1] = new SelectListItem { Text = "северный", Value = "north" };
-                modesList[2] = new SelectListItem { Text = "южный", Value = "south" };
-
-                ViewBag.modesList = modesList;
 
                 switch (valueBox)
                 {
@@ -255,10 +217,8 @@ namespace ASP_HW2_MVC.Controllers
                 }
             }
 
-            Session["Components"] = componentList;
             return RedirectToAction("Index");
         }
-
 
 
     }
